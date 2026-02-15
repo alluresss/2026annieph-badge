@@ -1,24 +1,50 @@
-// ---- CONFIG ----
-// Add puzzles here. The "answer" is what unlocks the NEXT puzzle.
-// For soft-locking: answers are in client-side code, so players *can* inspect them.
-// You can reduce casual cheating by using hashes, but it’s still not secure.
+// app.js
+// Soft-locking puzzle hunt using localStorage.
+// - Index page shows puzzles as unlocked/locked based on progress.
+// - Puzzle pages call PuzzleHunt.requireUnlocked(puzzleId) to redirect if locked.
+// - Answer submission uses PuzzleHunt.submitAnswer(puzzleId, guess).
+
+// =========================
+// CONFIG (EDIT THIS)
+// =========================
+// IMPORTANT: answers are in client-side code (soft lock). People *can* inspect them.
 const PUZZLES = [
-  { id: 1, title: "Puzzle 1", path: "puzzles/puzzle1.html", answer: "APPLE" },
-  { id: 2, title: "Puzzle 2", path: "puzzles/puzzle2.html", answer: "ORANGE" },
-  { id: 3, title: "Puzzle 3", path: "puzzles/puzzle3.html", answer: "BANANA" },
+  {
+    id: 1,
+    title: "The Red Fruit",
+    path: "puzzles/puzzle1.html",
+    answer: "APPLE",
+  },
+  {
+    id: 2,
+    title: "Orange Identity",
+    path: "puzzles/puzzle2.html",
+    answer: "ORANGE",
+  },
+  {
+    id: 3,
+    title: "Banana Business",
+    path: "puzzles/puzzle3.html",
+    answer: "BANANA",
+  },
 ];
 
-const STORAGE_KEY = "puzzle_hunt_progress_v1";
+const STORAGE_KEY = "puzzle_hunt_progress_v2";
 
-// ---- HELPERS ----
+// =========================
+// STORAGE HELPERS
+// =========================
 function loadProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { unlockedUpTo: 1 }; // puzzle 1 unlocked by default
+    if (!raw) return { unlockedUpTo: 1 }; // Puzzle 1 unlocked by default
+
     const parsed = JSON.parse(raw);
-    // minimal validation
     const unlockedUpTo = Number(parsed.unlockedUpTo);
-    if (!Number.isFinite(unlockedUpTo) || unlockedUpTo < 1) return { unlockedUpTo: 1 };
+
+    if (!Number.isFinite(unlockedUpTo) || unlockedUpTo < 1) {
+      return { unlockedUpTo: 1 };
+    }
     return { unlockedUpTo };
   } catch {
     return { unlockedUpTo: 1 };
@@ -34,48 +60,58 @@ function normalizeAnswer(s) {
     .toString()
     .trim()
     .toUpperCase()
-    .replace(/\s+/g, " "); // keep single spaces if you want multi-word answers
+    .replace(/\s+/g, " "); // collapses multiple spaces
 }
 
-// Called on puzzle pages
+// =========================
+// PUZZLE PAGE FUNCTIONS
+// =========================
 function requireUnlocked(puzzleId) {
   const { unlockedUpTo } = loadProgress();
   if (puzzleId > unlockedUpTo) {
-    // If locked, send them back home
+    // Redirect locked puzzles back to homepage
     window.location.href = "../index.html";
   }
 }
 
-// Called on puzzle pages when a player submits an answer
 function submitAnswer(puzzleId, inputValue) {
   const guess = normalizeAnswer(inputValue);
-  const puzzle = PUZZLES.find(p => p.id === puzzleId);
+
+  const puzzle = PUZZLES.find((p) => p.id === puzzleId);
   if (!puzzle) return { ok: false, msg: "Puzzle not found." };
 
-  const correct = normalizeAnswer(puzzle.answer);
-  if (guess.length === 0) return { ok: false, msg: "Type an answer first." };
+  if (!guess) return { ok: false, msg: "Type an answer first." };
 
+  const correct = normalizeAnswer(puzzle.answer);
   if (guess === correct) {
     const progress = loadProgress();
-    // Unlock next puzzle (or keep at max)
     const nextId = puzzleId + 1;
+
+    // Unlock the next puzzle
     progress.unlockedUpTo = Math.max(progress.unlockedUpTo, nextId);
-    // Cap at last+1 is fine; list rendering checks per puzzle id anyway
     saveProgress(progress);
-    return { ok: true, msg: "Correct! Next puzzle unlocked." };
+
+    // If this is the last puzzle, still show success message
+    const isLast = puzzleId === PUZZLES[PUZZLES.length - 1].id;
+    return {
+      ok: true,
+      msg: isLast ? "Correct! You solved the final puzzle!" : "Correct! Next puzzle unlocked.",
+    };
   }
 
   return { ok: false, msg: "Not quite. Try again!" };
 }
 
-// Used on index.html to show lock/unlock state
+// =========================
+// INDEX PAGE RENDERING
+// =========================
 function renderIndex() {
   const listEl = document.getElementById("puzzleList");
-  if (!listEl) return;
+  if (!listEl) return; // Not on index page
 
   const { unlockedUpTo } = loadProgress();
-
   listEl.innerHTML = "";
+
   for (const p of PUZZLES) {
     const isUnlocked = p.id <= unlockedUpTo;
 
@@ -85,30 +121,38 @@ function renderIndex() {
     const left = document.createElement("div");
     left.className = "left";
 
-    const title = document.createElement("div");
-    title.innerHTML = `<strong>${p.title}</strong>`;
+    const name = document.createElement("div");
+    name.className = "puzzle-name";
+    name.textContent = p.title;
 
     const badge = document.createElement("span");
     badge.className = "badge " + (isUnlocked ? "open" : "locked");
     badge.textContent = isUnlocked ? "Unlocked" : "Locked";
 
-    left.appendChild(title);
+    left.appendChild(name);
     left.appendChild(badge);
 
     const link = document.createElement("a");
     link.className = "button";
     link.textContent = isUnlocked ? "Open" : "Locked";
-    link.href = p.path;
     link.setAttribute("aria-disabled", String(!isUnlocked));
-    if (!isUnlocked) link.removeAttribute("href");
+
+    if (isUnlocked) {
+      link.href = p.path;
+    } else {
+      // No href so it can't be clicked
+      link.removeAttribute("href");
+    }
 
     li.appendChild(left);
     li.appendChild(link);
     listEl.appendChild(li);
   }
 
+  // Optional reset button if present
   const resetBtn = document.getElementById("resetBtn");
-  if (resetBtn) {
+  if (resetBtn && !resetBtn.dataset.bound) {
+    resetBtn.dataset.bound = "true";
     resetBtn.addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
       renderIndex();
@@ -117,8 +161,11 @@ function renderIndex() {
   }
 }
 
-// Auto-run on index
+// Run on page load (index will render; puzzle pages ignore)
 document.addEventListener("DOMContentLoaded", renderIndex);
 
-// Expose functions to puzzle pages
-window.PuzzleHunt = { requireUnlocked, submitAnswer };
+// Expose functions for puzzle pages
+window.PuzzleHunt = {
+  requireUnlocked,
+  submitAnswer,
+};
