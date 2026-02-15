@@ -1,4 +1,3 @@
-<!-- puzzles/puzzle3.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -15,10 +14,7 @@
     <p class="page-subtitle">Read the embedded doc below, then submit your answer.</p>
 
     <div class="embed-wrap">
-      <iframe
-        class="doc-embed"
-        src="PASTE_YOUR_PUBLISHED_GOOGLE_DOC_LINK_HERE"
-      ></iframe>
+      <iframe class="doc-embed" src="PASTE_PUZZLE_3_PUBLISHED_GOOGLE_DOC_LINK"></iframe>
     </div>
 
     <section class="answer-section">
@@ -38,7 +34,15 @@
     window.PuzzleHunt.requireUnlocked(puzzleId);
 
     const answerEl = document.getElementById("answer");
+    const submitBtn = document.getElementById("submitBtn");
     const feedbackEl = document.getElementById("feedback");
+
+    const state = window.PuzzleHunt.getPuzzleState(puzzleId);
+    if (state.solved) {
+      answerEl.disabled = true;
+      submitBtn.disabled = true;
+      feedbackEl.textContent = "Solved ✅ You can revisit this puzzle, but resubmission is disabled.";
+    }
 
     function doSubmit() {
       const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
@@ -50,7 +54,7 @@
       }
     }
 
-    document.getElementById("submitBtn").addEventListener("click", doSubmit);
+    submitBtn.addEventListener("click", doSubmit);
     answerEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") doSubmit();
     });
