@@ -42,3 +42,54 @@ button.secondary { background: #fff; color: #111; }
   width: 100%; max-width: 420px;
   padding: 10px 12px; border-radius: 12px; border: 1px solid #ddd;
 }
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.puzzle-header {
+  margin-bottom: 30px;
+}
+
+.puzzle-title {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.puzzle-instructions {
+  color: #555;
+  font-size: 16px;
+}
+
+.puzzle-content {
+  margin-bottom: 30px;
+}
+
+.puzzle-box {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.answer-section {
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.answer-section input {
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.feedback {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
