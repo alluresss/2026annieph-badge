@@ -1,10 +1,11 @@
-// app.js
-// Soft-lock puzzle hunt using localStorage.
-// Features added:
-// - "Solved" indicator
-// - Progress tracker on homepage
-// - Only show puzzles up to the next available (hide all future puzzles)
-// - Redirect to homepage after correct solve (handled via submitAnswer return flag)
+// app.js — soft-lock puzzle hunt (localStorage)
+//
+// Requirements implemented:
+// - Gallery/grid homepage layout
+// - Only show puzzles up to the next available (hide future locked titles)
+// - Show Solved badges + progress tracker
+// - Allow revisiting solved puzzles, BUT disable resubmission on solved puzzles
+// - Redirect to homepage after correct solve
 
 const PUZZLES = [
   { id: 1, title: "The Red Fruit",     path: "puzzles/puzzle1.html", answer: "APPLE" },
@@ -12,11 +13,12 @@ const PUZZLES = [
   { id: 3, title: "Banana Business",   path: "puzzles/puzzle3.html", answer: "BANANA" },
 ];
 
-// New storage key (keeps things clean)
-const STORAGE_KEY = "puzzle_hunt_progress_v3";
+const STORAGE_KEY = "puzzle_hunt_progress_v4";
 
+// -------------------------
+// Storage helpers
+// -------------------------
 function loadProgress() {
-  // Default: puzzle 1 available, none solved yet
   const fallback = { unlockedUpTo: 1, solvedIds: [] };
 
   try {
@@ -29,7 +31,6 @@ function loadProgress() {
 
     if (!Number.isFinite(unlockedUpTo) || unlockedUpTo < 1) return fallback;
 
-    // Clean/normalize solved ids
     const solvedSet = new Set(
       solvedIds
         .map((x) => Number(x))
@@ -54,10 +55,14 @@ function normalizeAnswer(s) {
     .replace(/\s+/g, " ");
 }
 
-// -------------------------
-// PUZZLE PAGE FUNCTIONS
-// -------------------------
+function isSolved(puzzleId) {
+  const { solvedIds } = loadProgress();
+  return solvedIds.includes(puzzleId);
+}
 
+// -------------------------
+// Puzzle page functions
+// -------------------------
 function requireUnlocked(puzzleId) {
   const { unlockedUpTo } = loadProgress();
   if (puzzleId > unlockedUpTo) {
@@ -66,6 +71,11 @@ function requireUnlocked(puzzleId) {
 }
 
 function submitAnswer(puzzleId, inputValue) {
+  // Prevent submitting again if already solved
+  if (isSolved(puzzleId)) {
+    return { ok: false, msg: "You already solved this puzzle. Resubmission is disabled." };
+  }
+
   const guess = normalizeAnswer(inputValue);
   const puzzle = PUZZLES.find((p) => p.id === puzzleId);
   if (!puzzle) return { ok: false, msg: "Puzzle not found." };
@@ -76,14 +86,13 @@ function submitAnswer(puzzleId, inputValue) {
   if (guess === correct) {
     const progress = loadProgress();
 
-    // Mark this puzzle solved
+    // mark solved
     const solved = new Set(progress.solvedIds);
     solved.add(puzzleId);
     progress.solvedIds = Array.from(solved);
 
-    // Unlock next puzzle
-    const nextId = puzzleId + 1;
-    progress.unlockedUpTo = Math.max(progress.unlockedUpTo, nextId);
+    // unlock next
+    progress.unlockedUpTo = Math.max(progress.unlockedUpTo, puzzleId + 1);
 
     saveProgress(progress);
 
@@ -91,74 +100,79 @@ function submitAnswer(puzzleId, inputValue) {
     return {
       ok: true,
       msg: isLast ? "Correct! You solved the final puzzle!" : "Correct! Next puzzle unlocked.",
-      redirectHome: true, // puzzle pages will use this to redirect
+      redirectHome: true,
     };
   }
 
   return { ok: false, msg: "Not quite. Try again!" };
 }
 
-// -------------------------
-// HOMEPAGE RENDERING
-// -------------------------
+// Helper for puzzle pages to disable the form if solved
+function getPuzzleState(puzzleId) {
+  const { unlockedUpTo, solvedIds } = loadProgress();
+  return {
+    unlockedUpTo,
+    solved: solvedIds.includes(puzzleId),
+  };
+}
 
+// -------------------------
+// Homepage rendering
+// -------------------------
 function renderIndex() {
   const listEl = document.getElementById("puzzleList");
-  if (!listEl) return; // not on homepage
+  if (!listEl) return;
 
-  const progressEl = document.getElementById("progressText"); // optional element
+  const progressEl = document.getElementById("progressText");
   const { unlockedUpTo, solvedIds } = loadProgress();
   const solvedSet = new Set(solvedIds);
 
-  // Only show puzzles up to the next available one:
-  // - all solved puzzles are <= unlockedUpTo-1
-  // - plus the current available puzzle (id === unlockedUpTo)
-  // - hide everything > unlockedUpTo
-  const visiblePuzzles = PUZZLES.filter((p) => p.id <= unlockedUpTo);
+  // Show only puzzles up to the next available one (hide future locked puzzles + their titles)
+  const visible = PUZZLES.filter((p) => p.id <= unlockedUpTo);
 
-  // Progress tracker
+  // Progress
   const solvedCount = solvedSet.size;
   const total = PUZZLES.length;
-  if (progressEl) {
-    progressEl.textContent = `Solved ${solvedCount} / ${total}`;
-  }
+  if (progressEl) progressEl.textContent = `Solved ${solvedCount} / ${total}`;
 
-  // Render list
   listEl.innerHTML = "";
 
-  for (const p of visiblePuzzles) {
-    const isSolved = solvedSet.has(p.id);
-    const isUnlocked = p.id <= unlockedUpTo;
+  for (const p of visible) {
+    const solved = solvedSet.has(p.id);
 
     const li = document.createElement("li");
-    li.className = "puzzle-item";
+    li.className = "card";
 
-    const left = document.createElement("div");
-    left.className = "left";
+    const top = document.createElement("div");
+    top.className = "card-top";
 
     const name = document.createElement("div");
     name.className = "puzzle-name";
     name.textContent = p.title;
 
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+
     const badge = document.createElement("span");
-    badge.className = "badge " + (isSolved ? "open" : "open");
-    badge.textContent = isSolved ? "Solved ✅" : "Unlocked";
+    badge.className = "badge " + (solved ? "solved" : "unlocked");
+    badge.textContent = solved ? "Solved ✅" : "Unlocked";
 
-    left.appendChild(name);
-    left.appendChild(badge);
+    meta.appendChild(badge);
 
-    const link = document.createElement("a");
-    link.className = "button";
-    link.textContent = "Open";
-    link.href = p.path;
-    link.setAttribute("aria-disabled", String(!isUnlocked));
+    top.appendChild(name);
+    top.appendChild(meta);
 
-    li.appendChild(left);
-    li.appendChild(link);
+    const open = document.createElement("a");
+    open.className = "button";
+    open.textContent = "Open";
+    open.href = p.path;
+
+    li.appendChild(top);
+    li.appendChild(open);
     listEl.appendChild(li);
   }
 
-  // Reset button (optional)
+  // Reset (optional)
   const resetBtn = document.getElementById("resetBtn");
   if (resetBtn && !resetBtn.dataset.bound) {
     resetBtn.dataset.bound = "true";
@@ -176,4 +190,5 @@ document.addEventListener("DOMContentLoaded", renderIndex);
 window.PuzzleHunt = {
   requireUnlocked,
   submitAnswer,
+  getPuzzleState,
 };
