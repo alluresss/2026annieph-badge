@@ -1,169 +1,59 @@
-:root {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #111;
-}
+<!-- puzzles/puzzle3.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Banana Business</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <main class="container">
+    <a class="button secondary" href="../index.html">← Back to Puzzle List</a>
 
-body {
-  margin: 0;
-  background: #fafafa;
-  line-height: 1.5;
-}
+    <h1 class="page-title">Banana Business</h1>
+    <p class="page-subtitle">Read the embedded doc below, then submit your answer.</p>
 
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px;
-}
+    <div class="embed-wrap">
+      <iframe
+        class="doc-embed"
+        src="PASTE_YOUR_PUBLISHED_GOOGLE_DOC_LINK_HERE"
+      ></iframe>
+    </div>
 
-header {
-  background: #fff;
-  border-bottom: 1px solid #eaeaea;
-}
+    <section class="answer-section">
+      <label for="answer"><strong>Submit answer</strong></label><br />
+      <input id="answer" class="input" placeholder="Type your answer..." autocomplete="off" />
+      <div class="row">
+        <button id="submitBtn">Submit</button>
+      </div>
+      <p id="feedback" class="feedback"></p>
+      <p class="note">Answer is not case sensitive.</p>
+    </section>
+  </main>
 
-h1, h2 {
-  margin: 0 0 10px;
-}
+  <script src="../app.js"></script>
+  <script>
+    const puzzleId = 3;
+    window.PuzzleHunt.requireUnlocked(puzzleId);
 
-.muted {
-  color: #555;
-  margin: 0 0 16px;
-}
+    const answerEl = document.getElementById("answer");
+    const feedbackEl = document.getElementById("feedback");
 
-.row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
+    function doSubmit() {
+      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+      feedbackEl.textContent = res.msg;
+      feedbackEl.style.color = res.ok ? "green" : "#a00";
 
-/* Buttons */
-button, a.button {
-  border: 1px solid #ddd;
-  background: #111;
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 14px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 15px;
-  font-weight: 600;
-}
+      if (res.ok && res.redirectHome) {
+        window.location.href = "../index.html";
+      }
+    }
 
-button.secondary, a.button.secondary {
-  background: #fff;
-  color: #111;
-}
-
-a.button[aria-disabled="true"] {
-  pointer-events: none;
-  opacity: 0.45;
-}
-
-/* Puzzle list (homepage) */
-.puzzle-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.puzzle-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 18px;
-  padding: 16px 18px;
-  margin: 14px 0;
-}
-
-.puzzle-item .left {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.puzzle-name {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.badge {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #f3f3f3;
-  width: fit-content;
-}
-
-.badge.open {
-  background: #e9f7ef;
-  border-color: #bfe7cf;
-  color: #1a5d32;
-}
-
-.badge.locked {
-  background: #fff1f1;
-  border-color: #ffd0d0;
-  color: #8b0000;
-}
-
-/* Puzzle page layout */
-.page-title {
-  font-size: 40px;
-  margin: 10px 0 6px;
-}
-
-.page-subtitle {
-  margin: 0 0 18px;
-  color: #555;
-}
-
-/* Embedded doc */
-.embed-wrap {
-  background: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 18px;
-  overflow: hidden;
-  margin: 18px 0;
-}
-
-.doc-embed {
-  width: 100%;
-  height: 70vh;   /* responsive height */
-  border: 0;
-  display: block;
-}
-
-/* Answer box */
-.answer-section {
-  background: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 18px;
-  padding: 18px;
-  margin-top: 16px;
-}
-
-.input {
-  width: 100%;
-  max-width: 420px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  margin-top: 8px;
-}
-
-.feedback {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #555;
-}
-
-.note {
-  font-size: 13px;
-  color: #666;
-  margin-top: 10px;
-}
+    document.getElementById("submitBtn").addEventListener("click", doSubmit);
+    answerEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doSubmit();
+    });
+  </script>
+</body>
+</html>
