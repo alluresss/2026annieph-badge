@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Puzzle 2</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <main class="container">
+    <a class="button secondary" href="../index.html">← Back</a>
+
+    <h1>Puzzle 2</h1>
+
+    <div class="card">
+      <p><strong>Puzzle:</strong> I’m orange in color and my name is also my color. What am I?</p>
+      <p class="note">Answer format: a single word.</p>
+    </div>
+
+    <div class="card">
+      <label for="answer"><strong>Submit answer</strong></label><br />
+      <input id="answer" class="input" placeholder="Type your answer…" />
+      <div class="row" style="margin-top:10px;">
+        <button id="submitBtn">Submit</button>
+      </div>
+      <p id="feedback" class="note"></p>
+    </div>
+  </main>
+
+  <script src="../app.js"></script>
+  <script>
+    const puzzleId = 2;
+    window.PuzzleHunt.requireUnlocked(puzzleId);
+
+    const answerEl = document.getElementById("answer");
+    const feedbackEl = document.getElementById("feedback");
+
+    function doSubmit() {
+      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+      feedbackEl.textContent = res.msg;
+      if (res.ok) feedbackEl.style.color = "green";
+      else feedbackEl.style.color = "#a00";
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", doSubmit);
+    answerEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doSubmit();
+    });
+  </script>
+</body>
+</html>
