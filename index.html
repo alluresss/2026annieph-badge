@@ -1,25 +1,27 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Puzzle Hunt</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="container">
-    <h1>Puzzle Hunt</h1>
-    <p class="muted">Solve puzzles in order to unlock the next one.</p>
-    <p id="progressText" class="muted"></p>
+  <header>
+    <div class="container">
+      <h1>Puzzle Hunt</h1>
+      <p class="muted">Solve puzzles in order. New puzzles appear only after you solve the current one.</p>
+      <p id="progressText" class="progress"></p>
 
-    <div class="row">
-      <button id="resetBtn" class="secondary">Reset progress (this device)</button>
+      <div class="row">
+        <button id="resetBtn" class="secondary">Reset progress (this device)</button>
+      </div>
     </div>
   </header>
 
   <main class="container">
     <h2>Puzzles</h2>
-    <ul id="puzzleList" class="puzzle-list"></ul>
+    <ul id="puzzleList" class="gallery"></ul>
   </main>
 
   <script src="app.js"></script>
