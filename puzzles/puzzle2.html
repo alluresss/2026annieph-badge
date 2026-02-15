@@ -3,46 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Puzzle 1</title>
+  <title>Orange Identity</title>
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
   <main class="container">
+    <a class="button secondary" href="../index.html">← Back</a>
 
-    <a class="back-link" href="../index.html">← Back to Puzzle List</a>
+    <h1 class="page-title">Orange Identity</h1>
+    <p class="page-subtitle">Read the embedded doc below, then submit your answer.</p>
 
-    <!-- PUZZLE HEADER -->
-    <section class="puzzle-header">
-      <h1 class="puzzle-title">Puzzle 1: The Red Fruit</h1>
-      <p class="puzzle-instructions">
-        Solve the riddle below. Submit your answer as a single word.
-      </p>
-    </section>
+    <div class="embed-wrap">
+      <iframe
+        class="doc-embed"
+        src="PASTE_YOUR_PUBLISHED_GOOGLE_DOC_LINK_HERE"
+        allowfullscreen
+      ></iframe>
+    </div>
 
-    <!-- PUZZLE CONTENT AREA -->
-    <section class="puzzle-content">
-      <div class="puzzle-box">
-        <p>
-          I am red and round,<br>
-          In pies I am found.<br>
-          What am I?
-        </p>
-      </div>
-    </section>
-
-    <!-- ANSWER SUBMISSION -->
     <section class="answer-section">
-      <label for="answer"><strong>Submit Answer</strong></label>
-      <input id="answer" class="input" placeholder="Enter your answer..." />
-      <button id="submitBtn">Submit</button>
+      <label for="answer"><strong>Submit answer</strong></label><br />
+      <input id="answer" class="input" placeholder="Type your answer..." autocomplete="off" />
+      <div class="row">
+        <button id="submitBtn">Submit</button>
+      </div>
       <p id="feedback" class="feedback"></p>
+      <p class="note">Answer is not case sensitive.</p>
     </section>
-
   </main>
 
   <script src="../app.js"></script>
   <script>
-    const puzzleId = 1;
+    const puzzleId = 2;
     window.PuzzleHunt.requireUnlocked(puzzleId);
 
     const answerEl = document.getElementById("answer");
@@ -51,7 +43,8 @@
     function doSubmit() {
       const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
       feedbackEl.textContent = res.msg;
-      feedbackEl.style.color = res.ok ? "green" : "red";
+      feedbackEl.style.color = res.ok ? "green" : "#a00";
+      if (res.ok) answerEl.value = "";
     }
 
     document.getElementById("submitBtn").addEventListener("click", doSubmit);
