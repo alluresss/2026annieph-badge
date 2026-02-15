@@ -1,3 +1,4 @@
+<!-- puzzles/puzzle3.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,7 +9,7 @@
 </head>
 <body>
   <main class="container">
-    <a class="button secondary" href="../index.html">← Back</a>
+    <a class="button secondary" href="../index.html">← Back to Puzzle List</a>
 
     <h1 class="page-title">Banana Business</h1>
     <p class="page-subtitle">Read the embedded doc below, then submit your answer.</p>
@@ -17,7 +18,6 @@
       <iframe
         class="doc-embed"
         src="PASTE_YOUR_PUBLISHED_GOOGLE_DOC_LINK_HERE"
-        allowfullscreen
       ></iframe>
     </div>
 
@@ -44,7 +44,10 @@
       const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
       feedbackEl.textContent = res.msg;
       feedbackEl.style.color = res.ok ? "green" : "#a00";
-      if (res.ok) answerEl.value = "";
+
+      if (res.ok && res.redirectHome) {
+        window.location.href = "../index.html";
+      }
     }
 
     document.getElementById("submitBtn").addEventListener("click", doSubmit);
