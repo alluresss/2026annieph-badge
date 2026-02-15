@@ -1,95 +1,225 @@
+/* =========================
+   GLOBAL STYLES
+========================= */
+
 :root {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #fafafa;
+  color: #111;
 }
 
-body { margin: 0; background: #fafafa; color: #111; }
-.container { max-width: 900px; margin: 0 auto; padding: 24px; }
-header { background: #fff; border-bottom: 1px solid #eaeaea; }
-h1 { margin: 0 0 8px; }
-.muted { color: #555; margin: 0 0 16px; }
+body {
+  margin: 0;
+  line-height: 1.5;
+  background: #fafafa;
+}
 
-.puzzle-list { list-style: none; padding: 0; margin: 0; }
-.puzzle-item {
-  display: flex; align-items: center; justify-content: space-between;
-  background: #fff; border: 1px solid #eaeaea; border-radius: 14px;
-  padding: 14px 16px; margin: 10px 0;
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
 }
-.puzzle-item .left { display: flex; flex-direction: column; gap: 4px; }
-.badge {
-  font-size: 12px; padding: 4px 10px; border-radius: 999px;
-  border: 1px solid #ddd; background: #f3f3f3;
-}
-.badge.open { background: #e9f7ef; border-color: #bfe7cf; }
-.badge.locked { background: #fff1f1; border-color: #ffd0d0; }
 
-a.button, button {
-  border: 1px solid #ddd; background: #111; color: #fff;
-  padding: 10px 12px; border-radius: 12px; cursor: pointer;
-  text-decoration: none; display: inline-block;
+h1, h2, h3 {
+  margin-top: 0;
 }
+
+.muted {
+  color: #555;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button,
+a.button {
+  border: 1px solid #ddd;
+  background: #111;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+button:hover,
+a.button:hover {
+  opacity: 0.9;
+}
+
+button.secondary,
+a.button.secondary {
+  background: #fff;
+  color: #111;
+}
+
 a.button[aria-disabled="true"] {
-  pointer-events: none; opacity: 0.45;
+  pointer-events: none;
+  opacity: 0.45;
 }
-button.secondary { background: #fff; color: #111; }
-.row { display:flex; gap: 10px; flex-wrap: wrap; }
-.note { font-size: 13px; color: #666; margin-top: 10px; }
 
-.card {
-  background: #fff; border: 1px solid #eaeaea; border-radius: 14px;
-  padding: 16px; margin: 16px 0;
-}
+/* =========================
+   INPUTS
+========================= */
+
 .input {
-  width: 100%; max-width: 420px;
-  padding: 10px 12px; border-radius: 12px; border: 1px solid #ddd;
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  margin-top: 8px;
 }
+
+.input:focus {
+  outline: none;
+  border-color: #999;
+}
+
+/* =========================
+   HEADER (INDEX PAGE)
+========================= */
+
+header {
+  background: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* =========================
+   PUZZLE LIST (INDEX PAGE)
+========================= */
+
+.puzzle-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.puzzle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+
+.puzzle-item .left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #f3f3f3;
+  width: fit-content;
+}
+
+.badge.open {
+  background: #e9f7ef;
+  border-color: #bfe7cf;
+  color: #1a5d32;
+}
+
+.badge.locked {
+  background: #fff1f1;
+  border-color: #ffd0d0;
+  color: #8b0000;
+}
+
+/* =========================
+   PUZZLE PAGE LAYOUT
+========================= */
+
 .back-link {
   display: inline-block;
   margin-bottom: 20px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  color: #111;
 }
 
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Puzzle header section */
 .puzzle-header {
-  margin-bottom: 30px;
+  margin-bottom: 22px;
 }
 
 .puzzle-title {
-  margin-bottom: 10px;
-  font-size: 28px;
+  font-size: 40px;
+  margin: 0 0 10px;
 }
 
 .puzzle-instructions {
-  color: #555;
   font-size: 16px;
+  color: #555;
+  margin: 0;
 }
 
+/* Puzzle content box */
 .puzzle-content {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .puzzle-box {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #eaeaea;
-  padding: 20px;
-  border-radius: 12px;
+  border-radius: 18px;
+  padding: 22px;
   font-size: 18px;
   line-height: 1.6;
 }
 
+/* Answer submission */
 .answer-section {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #eaeaea;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.answer-section input {
-  margin-top: 10px;
-  margin-right: 10px;
+  border-radius: 18px;
+  padding: 22px;
 }
 
 .feedback {
   margin-top: 10px;
   font-size: 14px;
+  color: #555;
 }
 
+/* =========================
+   CARD STYLE (OPTIONAL)
+========================= */
+
+.card {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 18px;
+  padding: 18px;
+  margin: 18px 0;
+}
+
+/* Notes / small text */
+.note {
+  font-size: 13px;
+  color: #666;
+  margin-top: 10px;
+}
