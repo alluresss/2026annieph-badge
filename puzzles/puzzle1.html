@@ -8,23 +8,36 @@
 </head>
 <body>
   <main class="container">
-    <a class="button secondary" href="../index.html">← Back</a>
 
-    <h1>Puzzle 1</h1>
+    <a class="back-link" href="../index.html">← Back to Puzzle List</a>
 
-    <div class="card">
-      <p><strong>Puzzle:</strong> What fruit is red and commonly found in pies?</p>
-      <p class="note">Answer format: a single word.</p>
-    </div>
+    <!-- PUZZLE HEADER -->
+    <section class="puzzle-header">
+      <h1 class="puzzle-title">Puzzle 1: The Red Fruit</h1>
+      <p class="puzzle-instructions">
+        Solve the riddle below. Submit your answer as a single word.
+      </p>
+    </section>
 
-    <div class="card">
-      <label for="answer"><strong>Submit answer</strong></label><br />
-      <input id="answer" class="input" placeholder="Type your answer…" />
-      <div class="row" style="margin-top:10px;">
-        <button id="submitBtn">Submit</button>
+    <!-- PUZZLE CONTENT AREA -->
+    <section class="puzzle-content">
+      <div class="puzzle-box">
+        <p>
+          I am red and round,<br>
+          In pies I am found.<br>
+          What am I?
+        </p>
       </div>
-      <p id="feedback" class="note"></p>
-    </div>
+    </section>
+
+    <!-- ANSWER SUBMISSION -->
+    <section class="answer-section">
+      <label for="answer"><strong>Submit Answer</strong></label>
+      <input id="answer" class="input" placeholder="Enter your answer..." />
+      <button id="submitBtn">Submit</button>
+      <p id="feedback" class="feedback"></p>
+    </section>
+
   </main>
 
   <script src="../app.js"></script>
@@ -38,8 +51,7 @@
     function doSubmit() {
       const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
       feedbackEl.textContent = res.msg;
-      if (res.ok) feedbackEl.style.color = "green";
-      else feedbackEl.style.color = "#a00";
+      feedbackEl.style.color = res.ok ? "green" : "red";
     }
 
     document.getElementById("submitBtn").addEventListener("click", doSubmit);
