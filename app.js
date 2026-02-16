@@ -1,11 +1,4 @@
-// app.js — soft-lock puzzle hunt (localStorage)
-//
-// Requirements implemented:
-// - Gallery/grid homepage layout
-// - Only show puzzles up to the next available (hide future locked titles)
-// - Show Solved badges + progress tracker
-// - Allow revisiting solved puzzles, BUT disable resubmission on solved puzzles
-// - Redirect to homepage after correct solve
+// app.js — soft-lock puzzle hunt + wicked transitions
 
 const PUZZLES = [
   { id: 1, title: "The Red Fruit",     path: "puzzles/puzzle1.html", answer: "APPLE" },
@@ -13,7 +6,92 @@ const PUZZLES = [
   { id: 3, title: "Banana Business",   path: "puzzles/puzzle3.html", answer: "BANANA" },
 ];
 
-const STORAGE_KEY = "puzzle_hunt_progress_v4";
+const STORAGE_KEY = "puzzle_hunt_progress_v5";
+
+// -------------------------
+// Wicked background + transitions bootstrap
+// -------------------------
+function ensureWickedLayers() {
+  // Emerald City background
+  if (!document.querySelector(".bg-emerald-city")) {
+    const city = document.createElement("div");
+    city.className = "bg-emerald-city";
+    document.body.appendChild(city);
+  }
+
+  // Transition overlay
+  if (!document.getElementById("pageTransition")) {
+    const t = document.createElement("div");
+    t.id = "pageTransition";
+    document.body.appendChild(t);
+  }
+}
+
+function getPath() {
+  return window.location.pathname || "";
+}
+
+function isPuzzlePath(href) {
+  return href.includes("/puzzles/") || href.includes("puzzles/");
+}
+
+function isHomePath(href) {
+  // covers /index.html and directory root
+  return href.endsWith("/index.html") || href.endsWith("/");
+}
+
+function chooseTransitionForNavigation(fromPath, toHref, reason) {
+  // reason can override (e.g., "solve")
+  if (reason === "solve") return "t-emerald-burst";
+
+  const goingToPuzzle = isPuzzlePath(toHref);
+  const leavingPuzzle = isPuzzlePath(fromPath);
+
+  if (!leavingPuzzle && goingToPuzzle) return "t-emerald-sweep";    // home -> puzzle
+  if (leavingPuzzle && isHomePath(toHref)) return "t-pink-sparkle"; // puzzle -> home
+
+  return "t-fade";
+}
+
+function navigateWithTransition(href, transitionClass) {
+  ensureWickedLayers();
+  // clear any prior transition classes
+  document.body.classList.remove("t-fade", "t-emerald-sweep", "t-pink-sparkle", "t-emerald-burst");
+  document.body.classList.add(transitionClass);
+
+  // small delay so animation plays before navigation
+  window.setTimeout(() => {
+    window.location.href = href;
+  }, 420);
+}
+
+// Intercept same-site link clicks to animate between pages
+function enableLinkTransitions() {
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a");
+    if (!a) return;
+
+    // ignore modified clicks/new tab
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target && a.target !== "_self") return;
+    if (!a.href) return;
+
+    const url = new URL(a.href, window.location.href);
+
+    // only intercept same origin
+    if (url.origin !== window.location.origin) return;
+
+    // if disabled
+    if (a.getAttribute("aria-disabled") === "true") return;
+
+    e.preventDefault();
+    const fromPath = getPath();
+    const toHref = url.href;
+
+    const tClass = chooseTransitionForNavigation(fromPath, toHref);
+    navigateWithTransition(toHref, tClass);
+  });
+}
 
 // -------------------------
 // Storage helpers
@@ -66,12 +144,11 @@ function isSolved(puzzleId) {
 function requireUnlocked(puzzleId) {
   const { unlockedUpTo } = loadProgress();
   if (puzzleId > unlockedUpTo) {
-    window.location.href = "../index.html";
+    navigateWithTransition("../index.html", "t-pink-sparkle");
   }
 }
 
 function submitAnswer(puzzleId, inputValue) {
-  // Prevent submitting again if already solved
   if (isSolved(puzzleId)) {
     return { ok: false, msg: "You already solved this puzzle. Resubmission is disabled." };
   }
@@ -86,14 +163,11 @@ function submitAnswer(puzzleId, inputValue) {
   if (guess === correct) {
     const progress = loadProgress();
 
-    // mark solved
     const solved = new Set(progress.solvedIds);
     solved.add(puzzleId);
     progress.solvedIds = Array.from(solved);
 
-    // unlock next
     progress.unlockedUpTo = Math.max(progress.unlockedUpTo, puzzleId + 1);
-
     saveProgress(progress);
 
     const isLast = puzzleId === PUZZLES[PUZZLES.length - 1].id;
@@ -101,19 +175,16 @@ function submitAnswer(puzzleId, inputValue) {
       ok: true,
       msg: isLast ? "Correct! You solved the final puzzle!" : "Correct! Next puzzle unlocked.",
       redirectHome: true,
+      transition: "solve",
     };
   }
 
   return { ok: false, msg: "Not quite. Try again!" };
 }
 
-// Helper for puzzle pages to disable the form if solved
 function getPuzzleState(puzzleId) {
   const { unlockedUpTo, solvedIds } = loadProgress();
-  return {
-    unlockedUpTo,
-    solved: solvedIds.includes(puzzleId),
-  };
+  return { unlockedUpTo, solved: solvedIds.includes(puzzleId) };
 }
 
 // -------------------------
@@ -127,13 +198,11 @@ function renderIndex() {
   const { unlockedUpTo, solvedIds } = loadProgress();
   const solvedSet = new Set(solvedIds);
 
-  // Show only puzzles up to the next available one (hide future locked puzzles + their titles)
+  // Only show puzzles up to the next available one
   const visible = PUZZLES.filter((p) => p.id <= unlockedUpTo);
 
-  // Progress
-  const solvedCount = solvedSet.size;
-  const total = PUZZLES.length;
-  if (progressEl) progressEl.textContent = `Solved ${solvedCount} / ${total}`;
+  // Progress text
+  if (progressEl) progressEl.textContent = `Solved ${solvedSet.size} / ${PUZZLES.length}`;
 
   listEl.innerHTML = "";
 
@@ -158,7 +227,6 @@ function renderIndex() {
     badge.textContent = solved ? "Solved ✅" : "Unlocked";
 
     meta.appendChild(badge);
-
     top.appendChild(name);
     top.appendChild(meta);
 
@@ -172,7 +240,7 @@ function renderIndex() {
     listEl.appendChild(li);
   }
 
-  // Reset (optional)
+  // Reset button
   const resetBtn = document.getElementById("resetBtn");
   if (resetBtn && !resetBtn.dataset.bound) {
     resetBtn.dataset.bound = "true";
@@ -184,11 +252,21 @@ function renderIndex() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", renderIndex);
+// -------------------------
+// Init
+// -------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  ensureWickedLayers();
+  enableLinkTransitions();
+  renderIndex();
+});
 
 // Export for puzzle pages
 window.PuzzleHunt = {
   requireUnlocked,
   submitAnswer,
   getPuzzleState,
+  // also expose transition nav helper for puzzle pages if needed
+  _navigateWithTransition: navigateWithTransition,
+  _chooseTransition: chooseTransitionForNavigation,
 };
