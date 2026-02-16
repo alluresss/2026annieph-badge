@@ -52,20 +52,31 @@
     }
 
     function doSubmit() {
-      // prevent double clicks
-      submitBtn.disabled = true;
+  submitBtn.disabled = true;
 
-      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
-      setFeedback(res.ok, res.msg);
+  const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+  setFeedback(res.ok, res.msg);
 
-      if (!res.ok) {
-        // wrong: shake, re-enable
-        answerEl.classList.remove("shake");
-        void answerEl.offsetWidth; // restart animation
-        answerEl.classList.add("shake");
-        submitBtn.disabled = false;
-        return;
-      }
+  if (!res.ok) {
+    answerEl.classList.remove("shake");
+    void answerEl.offsetWidth;
+    answerEl.classList.add("shake");
+    submitBtn.disabled = false;
+    return;
+  }
+
+  // Correct: Wicked confetti burst at the button
+  const rect = submitBtn.getBoundingClientRect();
+  window.PuzzleHunt.spawnWickedConfetti({
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  });
+
+  // Show "Correct!" for a moment, then transition home
+  setTimeout(() => {
+    window.PuzzleHunt.navigateWithTransition("../index.html");
+  }, 1200);
+}
 
       // correct: show message first, then redirect
       setTimeout(() => {
