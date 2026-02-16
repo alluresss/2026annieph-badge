@@ -14,29 +14,44 @@
     <p class="page-subtitle">Read the embedded doc below, then submit your answer.</p>
 
     <div class="embed-wrap">
-      <iframe class="doc-embed" src="PASTE_PUZZLE_2_PUBLISHED_GOOGLE_DOC_LINK"></iframe>
+      <!-- IMPORTANT: Use the *published* URL (File → Share → Publish to web) -->
+      <iframe
+        class="doc-embed"
+        src="PASTE_PUZZLE_2_PUBLISHED_GOOGLE_DOC_LINK"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+      ></iframe>
     </div>
 
     <section class="answer-section">
       <label for="answer"><strong>Submit answer</strong></label><br />
-      <input id="answer" class="input" placeholder="Type your answer..." autocomplete="off" />
+      <input
+        id="answer"
+        class="input"
+        placeholder="Type your answer..."
+        autocomplete="off"
+        spellcheck="false"
+      />
       <div class="row">
         <button id="submitBtn">Submit</button>
       </div>
+
       <p id="feedback" class="feedback"></p>
-      <p class="note">Answer is not case sensitive.</p>
     </section>
   </main>
 
   <script src="../app.js"></script>
   <script>
     const puzzleId = 2;
+
+    // Soft-lock: if not unlocked, kick back home
     window.PuzzleHunt.requireUnlocked(puzzleId);
 
     const answerEl = document.getElementById("answer");
     const submitBtn = document.getElementById("submitBtn");
     const feedbackEl = document.getElementById("feedback");
 
+    // If already solved, disable resubmission
     const state = window.PuzzleHunt.getPuzzleState(puzzleId);
     if (state.solved) {
       answerEl.disabled = true;
@@ -51,33 +66,36 @@
       feedbackEl.classList.add(ok ? "ok" : "bad");
     }
 
-  function doSubmit() {
-  submitBtn.disabled = true;
+    function shakeInput() {
+      answerEl.classList.remove("shake");
+      void answerEl.offsetWidth;
+      answerEl.classList.add("shake");
+    }
 
-  const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
-  setFeedback(res.ok, res.msg);
+    function doSubmit() {
+      if (window.PuzzleHunt.getPuzzleState(puzzleId).solved) return;
 
-  if (!res.ok) {
-    answerEl.classList.remove("shake");
-    void answerEl.offsetWidth;
-    answerEl.classList.add("shake");
-    submitBtn.disabled = false;
-    return;
-  }
+      submitBtn.disabled = true;
 
-  // Correct: Wicked confetti burst at the button
-  const rect = submitBtn.getBoundingClientRect();
-  window.PuzzleHunt.spawnWickedConfetti({
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2
-  });
+      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+      setFeedback(res.ok, res.msg);
 
-  // Show "Correct!" for a moment, then transition home
-  setTimeout(() => {
-    window.PuzzleHunt.navigateWithTransition("../index.html");
-  }, 1200);
-}
+      if (!res.ok) {
+        shakeInput();
+        submitBtn.disabled = false;
+        return;
+      }
 
+      const rect = submitBtn.getBoundingClientRect();
+      window.PuzzleHunt.spawnWickedConfetti({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      });
+
+      setTimeout(() => {
+        window.PuzzleHunt.navigateWithTransition("../index.html");
+      }, 900);
+    }
 
     submitBtn.addEventListener("click", doSubmit);
     answerEl.addEventListener("keydown", (e) => {
