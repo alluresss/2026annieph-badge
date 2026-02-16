@@ -1,17 +1,8 @@
-/* =========================
-   WICKED THEME v2
-   - Emerald City silhouette background
-   - Animated glitter
-   - Page transitions (varies by occasion)
-========================= */
-
-/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;600;700;800&display=swap");
 
 :root{
-  --bg0:#07060a;
-  --bg1:#0c0a12;
-
+  --bg0:#06050a;
+  --bg1:#0b0912;
   --text:#f5f3ff;
   --muted:rgba(245,243,255,.72);
 
@@ -26,189 +17,157 @@
   --shadow: 0 22px 70px rgba(0,0,0,.55);
   --shadow2: 0 12px 34px rgba(0,0,0,.45);
 
-  --radius: 18px;
+  --radius:18px;
 }
 
 *{ box-sizing:border-box; }
 
-html,body{
+html, body{
   margin:0;
   padding:0;
   color:var(--text);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height:1.55;
   background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(22,242,165,.18), transparent 60%),
-    radial-gradient(900px 500px at 80% 20%, rgba(255,79,216,.12), transparent 55%),
-    radial-gradient(800px 600px at 50% 80%, rgba(255,210,122,.10), transparent 60%),
+    radial-gradient(1200px 680px at 20% 0%, rgba(22,242,165,.18), transparent 60%),
+    radial-gradient(900px 560px at 85% 12%, rgba(255,79,216,.12), transparent 58%),
+    radial-gradient(900px 680px at 50% 85%, rgba(255,210,122,.10), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
+  overflow-x:hidden;
 }
 
-/* -------------------------
-   GLITTER BACKGROUND
-   (animated sparkles like Wicked cover shimmer)
--------------------------- */
-body::before{
-  content:"";
+/* =========================
+   GLITTER + SHIMMER (VISIBLE)
+   These are fixed layers behind content
+========================= */
+
+/* Glitter particles */
+.bg-glitter{
   position:fixed;
   inset:0;
   pointer-events:none;
-  opacity:.85;
+  z-index:0;
+  opacity:.65;
   background:
-    radial-gradient(2px 2px at 12% 22%, rgba(255,255,255,.50) 45%, transparent 46%),
-    radial-gradient(1px 1px at 78% 18%, rgba(255,255,255,.34) 45%, transparent 46%),
-    radial-gradient(1px 1px at 34% 66%, rgba(255,255,255,.28) 45%, transparent 46%),
-    radial-gradient(2px 2px at 62% 74%, rgba(255,255,255,.22) 45%, transparent 46%),
-    radial-gradient(1px 1px at 90% 52%, rgba(255,255,255,.24) 45%, transparent 46%),
-    radial-gradient(1px 1px at 24% 88%, rgba(255,255,255,.18) 45%, transparent 46%),
-    radial-gradient(2px 2px at 46% 30%, rgba(255,255,255,.20) 45%, transparent 46%),
-    radial-gradient(1px 1px at 55% 12%, rgba(255,255,255,.16) 45%, transparent 46%);
-  filter: blur(.2px);
-  animation: glitterTwinkle 4.2s ease-in-out infinite alternate;
+    radial-gradient(2px 2px at 10% 12%, rgba(255,255,255,.70) 50%, transparent 52%),
+    radial-gradient(1px 1px at 22% 38%, rgba(255,255,255,.35) 50%, transparent 52%),
+    radial-gradient(1px 1px at 32% 78%, rgba(255,255,255,.30) 50%, transparent 52%),
+    radial-gradient(2px 2px at 44% 22%, rgba(255,255,255,.45) 50%, transparent 52%),
+    radial-gradient(1px 1px at 58% 64%, rgba(255,255,255,.28) 50%, transparent 52%),
+    radial-gradient(2px 2px at 64% 16%, rgba(255,255,255,.38) 50%, transparent 52%),
+    radial-gradient(1px 1px at 72% 44%, rgba(255,255,255,.28) 50%, transparent 52%),
+    radial-gradient(2px 2px at 86% 30%, rgba(255,255,255,.35) 50%, transparent 52%),
+    radial-gradient(1px 1px at 92% 74%, rgba(255,255,255,.25) 50%, transparent 52%),
+    radial-gradient(2px 2px at 18% 88%, rgba(255,255,255,.30) 50%, transparent 52%);
+  filter: blur(.1px);
+  animation: glitterDrift 18s linear infinite;
 }
 
-@keyframes glitterTwinkle{
-  0%   { opacity:.55; transform: translateY(0px); }
-  100% { opacity:.95; transform: translateY(-6px); }
+@keyframes glitterDrift{
+  0%   { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-3%, 2%, 0); }
 }
 
-/* A second shimmer layer that drifts diagonally */
-body::after{
-  content:"";
+/* Shimmer sweep */
+.bg-shimmer{
   position:fixed;
-  inset:-20%;
+  inset:-30%;
   pointer-events:none;
+  z-index:0;
   opacity:.35;
   background:
     repeating-linear-gradient(
       120deg,
-      rgba(22,242,165,.10) 0px,
-      rgba(22,242,165,0) 14px,
-      rgba(255,79,216,.08) 28px,
-      rgba(255,79,216,0) 44px
+      rgba(22,242,165,.00) 0px,
+      rgba(22,242,165,.00) 18px,
+      rgba(22,242,165,.10) 36px,
+      rgba(255,79,216,.08) 54px,
+      rgba(255,79,216,.00) 72px
     );
   filter: blur(10px);
-  animation: shimmerDrift 14s linear infinite;
+  animation: shimmerMove 10s linear infinite;
 }
 
-@keyframes shimmerDrift{
-  0%   { transform: translate(-6%, 6%) rotate(0.01deg); }
-  100% { transform: translate(6%, -6%) rotate(0.01deg); }
+@keyframes shimmerMove{
+  0%   { transform: translate3d(-6%, 6%, 0); }
+  100% { transform: translate3d(6%, -6%, 0); }
 }
 
-/* -------------------------
-   EMERALD CITY SILHOUETTE
-   (CSS-drawn skyline via gradients)
--------------------------- */
-.bg-emerald-city{
+/* =========================
+   EMERALD CITY (HIGH QUALITY, INSPIRED)
+   This uses an SVG mask injected by JS (see app.js).
+   It won’t be an exact movie skyline, but it is cinematic.
+========================= */
+.bg-city{
   position:fixed;
   left:0; right:0; bottom:0;
-  height: 38vh;
+  height:min(46vh, 520px);
   pointer-events:none;
-  opacity:.45;
   z-index:0;
-  background:
-    /* glow haze behind city */
-    radial-gradient(900px 240px at 50% 100%, rgba(22,242,165,.30), transparent 65%),
-    radial-gradient(700px 200px at 20% 100%, rgba(255,79,216,.10), transparent 60%),
-    radial-gradient(700px 200px at 80% 100%, rgba(255,210,122,.08), transparent 60%),
-
-    /* skyline blocks */
-    linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0)) 0 0/100% 100%,
-    linear-gradient(to top, rgba(0,0,0,.72) 0 0) 0 100%/100% 20%,
-
-    /* buildings (a bunch of rectangles with different heights) */
-    linear-gradient(to top, rgba(0,0,0,.82) 0 0) 6% 100%/4% 38%,
-    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 12% 100%/6% 52%,
-    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 20% 100%/5% 44%,
-    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 28% 100%/7% 62%,
-    linear-gradient(to top, rgba(0,0,0,.80) 0 0) 38% 100%/4% 36%,
-    linear-gradient(to top, rgba(0,0,0,.88) 0 0) 44% 100%/8% 70%,
-    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 56% 100%/6% 56%,
-    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 66% 100%/7% 64%,
-    linear-gradient(to top, rgba(0,0,0,.82) 0 0) 76% 100%/5% 46%,
-    linear-gradient(to top, rgba(0,0,0,.88) 0 0) 84% 100%/8% 72%,
-    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 93% 100%/4% 40%;
-  background-repeat:no-repeat;
-  filter: drop-shadow(0 -10px 40px rgba(22,242,165,.18));
+  opacity:.72;
+  filter: drop-shadow(0 -14px 40px rgba(22,242,165,.18));
 }
 
-/* ensure content sits above background layers */
-header, main, .container { position:relative; z-index:1; }
+/* Foreground content above backgrounds */
+header, main, .container { position:relative; z-index:2; }
 
+/* =========================
+   LAYOUT + UI
+========================= */
 .container{
-  max-width: 1120px;
+  max-width:1120px;
   margin:0 auto;
   padding: 28px 20px;
 }
 
-/* -------------------------
-   HEADER
--------------------------- */
 header{
   position:sticky;
   top:0;
-  z-index:10;
-  backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(10,8,14,.86), rgba(10,8,14,.58));
+  z-index:5;
+  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(10,8,14,.88), rgba(10,8,14,.55));
   border-bottom: 1px solid var(--border);
 }
 
 h1{
   font-family: Cinzel, Georgia, serif;
-  letter-spacing:.6px;
+  letter-spacing:.7px;
   font-size: 52px;
   line-height:1.05;
-  margin: 0 0 8px;
-  text-shadow: 0 10px 30px rgba(0,0,0,.6);
-}
-
-header h1{
+  margin:0 0 8px;
+  text-shadow: 0 12px 38px rgba(0,0,0,.65);
   display:inline-block;
   position:relative;
 }
-header h1::after{
+
+h1::after{
   content:"";
   position:absolute;
   left:0;
-  right:-8px;
+  right:-10px;
   bottom:-10px;
   height:3px;
   border-radius:999px;
   background: linear-gradient(90deg, var(--emerald), rgba(22,242,165,.12), var(--pink));
-  box-shadow: 0 0 18px rgba(22,242,165,.35);
+  box-shadow: 0 0 22px rgba(22,242,165,.35);
 }
 
 h2{
   font-family: Cinzel, Georgia, serif;
-  letter-spacing:.5px;
+  letter-spacing:.45px;
   font-size: 30px;
   margin: 18px 0 12px;
 }
 
-.muted{
-  color: var(--muted);
-  margin: 0 0 10px;
-  font-size: 16px;
-}
-
-.progress{
-  margin-top: 10px;
-  font-weight: 900;
-  letter-spacing:.3px;
-  color: rgba(245,243,255,.92);
-}
+.muted{ color:var(--muted); margin:0 0 10px; }
+.progress{ margin-top:10px; font-weight:900; letter-spacing:.3px; }
 
 .row{
   display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 14px;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
 }
 
-/* -------------------------
-   BUTTONS
--------------------------- */
 button, a.button{
   appearance:none;
   border: 1px solid var(--border2);
@@ -224,13 +183,13 @@ button, a.button{
   align-items:center;
   justify-content:center;
   box-shadow: var(--shadow2);
-  transition: transform .12s ease, filter .12s ease, border-color .12s ease;
+  transition: transform .14s ease, filter .14s ease, border-color .14s ease;
 }
 
 button:hover, a.button:hover{
   transform: translateY(-1px);
   border-color: rgba(22,242,165,.45);
-  filter: brightness(1.05);
+  filter: brightness(1.06);
 }
 
 button.secondary, a.button.secondary{
@@ -242,9 +201,7 @@ button:disabled, a.button[aria-disabled="true"]{
   pointer-events:none;
 }
 
-/* -------------------------
-   GALLERY GRID
--------------------------- */
+/* Gallery cards */
 .gallery{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -260,15 +217,15 @@ button:disabled, a.button[aria-disabled="true"]{
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background:
-    radial-gradient(900px 300px at 20% 0%, rgba(22,242,165,.14), transparent 55%),
-    radial-gradient(700px 260px at 95% 20%, rgba(255,79,216,.10), transparent 50%),
+    radial-gradient(900px 320px at 18% 0%, rgba(22,242,165,.16), transparent 58%),
+    radial-gradient(700px 280px at 92% 20%, rgba(255,79,216,.11), transparent 55%),
     linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
   box-shadow: var(--shadow);
-  padding: 16px 16px 14px;
+  padding: 16px;
   display:flex;
   flex-direction:column;
   gap: 12px;
-  min-height: 165px;
+  min-height: 170px;
 }
 
 .card::before{
@@ -276,8 +233,8 @@ button:disabled, a.button[aria-disabled="true"]{
   position:absolute;
   inset:-2px;
   background: linear-gradient(135deg, rgba(22,242,165,.22), transparent 35%, rgba(255,79,216,.18));
-  opacity:.35;
-  filter: blur(14px);
+  opacity:.34;
+  filter: blur(16px);
   pointer-events:none;
 }
 
@@ -304,7 +261,6 @@ button:disabled, a.button[aria-disabled="true"]{
   align-items:center;
 }
 
-/* Badges */
 .badge{
   font-size: 12px;
   padding: 5px 10px;
@@ -327,25 +283,16 @@ button:disabled, a.button[aria-disabled="true"]{
   color: #ffe8bd;
 }
 
-.badge.locked{
-  border-color: rgba(255,79,216,.35);
-  background: rgba(255,79,216,.10);
-  color: #ffd0f3;
-}
-
-/* Magical open button */
 .card a.button{
   align-self:flex-start;
-  background: linear-gradient(180deg, rgba(22,242,165,.22), rgba(22,242,165,.08));
+  background: linear-gradient(180deg, rgba(22,242,165,.24), rgba(22,242,165,.08));
   border-color: rgba(22,242,165,.40);
   box-shadow:
     0 18px 40px rgba(0,0,0,.45),
-    0 0 22px rgba(22,242,165,.18);
+    0 0 28px rgba(22,242,165,.16);
 }
 
-/* -------------------------
-   PUZZLE PAGES
--------------------------- */
+/* Puzzle pages */
 .page-title{
   font-family: Cinzel, Georgia, serif;
   font-size: 42px;
@@ -353,10 +300,7 @@ button:disabled, a.button[aria-disabled="true"]{
   letter-spacing:.4px;
 }
 
-.page-subtitle{
-  margin:0 0 16px;
-  color: var(--muted);
-}
+.page-subtitle{ margin:0 0 16px; color: var(--muted); }
 
 .embed-wrap{
   border-radius: var(--radius);
@@ -396,25 +340,16 @@ button:disabled, a.button[aria-disabled="true"]{
 }
 
 .input:focus{
-  border-color: rgba(22,242,165,.55);
+  border-color: rgba(22,242,165,.58);
   box-shadow: 0 0 0 4px rgba(22,242,165,.12);
 }
 
-.feedback{
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.note{
-  margin-top: 8px;
-  font-size: 12px;
-  color: rgba(245,243,255,.60);
-}
+.feedback{ margin-top:10px; font-size:14px; color: var(--muted); }
+.note{ margin-top:8px; font-size:12px; color: rgba(245,243,255,.60); }
 
 /* =========================
-   PAGE TRANSITIONS (OVERLAY)
-   JS toggles these classes on <body>
+   CINEMATIC PAGE TRANSITIONS
+   Two-phase: OUT on click, IN on next page load
 ========================= */
 #pageTransition{
   position:fixed;
@@ -422,67 +357,64 @@ button:disabled, a.button[aria-disabled="true"]{
   pointer-events:none;
   z-index:9999;
   opacity:0;
-  transform: translateY(10px) scale(1.02);
-  transition: opacity .35s ease, transform .35s ease;
+  transform: translate3d(0,0,0);
 }
 
-/* default fade */
-body.t-fade #pageTransition{
+/* OUTGOING animations */
+body.pt-out-emerald #pageTransition{
   opacity:1;
-  transform:none;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-}
-
-/* emerald sweep (home -> puzzle) */
-body.t-emerald-sweep #pageTransition{
-  opacity:1;
-  transform:none;
   background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(22,242,165,.35), transparent 60%),
-    linear-gradient(90deg, rgba(22,242,165,.0), rgba(22,242,165,.18), rgba(0,0,0,.65));
-  backdrop-filter: blur(10px);
-  animation: sweep 520ms ease forwards;
+    radial-gradient(900px 520px at 20% 10%, rgba(22,242,165,.34), transparent 62%),
+    radial-gradient(900px 520px at 80% 15%, rgba(255,79,216,.18), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.78));
+  backdrop-filter: blur(12px);
+  animation: outEmerald 520ms cubic-bezier(.2,.9,.2,1) forwards;
 }
 
-@keyframes sweep{
-  0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); }
-  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+@keyframes outEmerald{
+  0%   { clip-path: inset(0 0 100% 0); transform: translateY(12px) scale(1.02); }
+  100% { clip-path: inset(0 0 0 0);   transform: translateY(0) scale(1.00); }
 }
 
-/* pink sparkle (puzzle -> home) */
-body.t-pink-sparkle #pageTransition{
+body.pt-out-pink #pageTransition{
   opacity:1;
-  transform:none;
   background:
-    radial-gradient(2px 2px at 18% 32%, rgba(255,255,255,.55) 45%, transparent 46%),
-    radial-gradient(2px 2px at 62% 18%, rgba(255,255,255,.45) 45%, transparent 46%),
-    radial-gradient(2px 2px at 78% 66%, rgba(255,255,255,.35) 45%, transparent 46%),
-    radial-gradient(1000px 500px at 70% 30%, rgba(255,79,216,.25), transparent 60%),
-    rgba(0,0,0,.55);
-  backdrop-filter: blur(10px);
-  animation: sparklePop 520ms ease forwards;
+    radial-gradient(600px 420px at 65% 25%, rgba(255,79,216,.30), transparent 60%),
+    radial-gradient(650px 520px at 35% 60%, rgba(22,242,165,.18), transparent 62%),
+    linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.80));
+  backdrop-filter: blur(12px);
+  animation: outPink 520ms cubic-bezier(.2,.9,.2,1) forwards;
 }
 
-@keyframes sparklePop{
-  0% { transform: scale(1.02); filter: brightness(1); }
-  60% { transform: scale(1.00); filter: brightness(1.12); }
-  100% { transform: scale(1.00); filter: brightness(1.0); }
+@keyframes outPink{
+  0%   { opacity:0; transform: scale(1.03); filter: brightness(1); }
+  100% { opacity:1; transform: scale(1.00); filter: brightness(1.10); }
 }
 
-/* emerald burst (solve -> home) */
-body.t-emerald-burst #pageTransition{
+body.pt-out-solve #pageTransition{
   opacity:1;
-  transform:none;
   background:
-    radial-gradient(600px 600px at 50% 55%, rgba(22,242,165,.45), transparent 62%),
-    radial-gradient(900px 500px at 45% 50%, rgba(255,210,122,.14), transparent 65%),
-    rgba(0,0,0,.55);
-  backdrop-filter: blur(10px);
-  animation: burst 520ms ease forwards;
+    radial-gradient(700px 700px at 50% 55%, rgba(22,242,165,.50), transparent 62%),
+    radial-gradient(1000px 600px at 55% 50%, rgba(255,210,122,.14), transparent 65%),
+    linear-gradient(180deg, rgba(0,0,0,.50), rgba(0,0,0,.82));
+  backdrop-filter: blur(14px);
+  animation: outSolve 620ms cubic-bezier(.2,.9,.2,1) forwards;
 }
 
-@keyframes burst{
-  0% { clip-path: circle(0% at 50% 55%); }
+@keyframes outSolve{
+  0%   { clip-path: circle(0% at 50% 55%); }
   100% { clip-path: circle(140% at 50% 55%); }
+}
+
+/* INCOMING animations */
+body.pt-in #pageTransition{
+  opacity:1;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(14px);
+  animation: inFade 520ms ease forwards;
+}
+
+@keyframes inFade{
+  0%   { opacity:1; }
+  100% { opacity:0; }
 }
