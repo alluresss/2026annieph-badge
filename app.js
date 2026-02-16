@@ -4,10 +4,10 @@ const PUZZLES = [
   { id: 3, title: "Banana Business",   path: "puzzles/puzzle3.html", answer: "BANANA" },
 ];
 
-const STORAGE_KEY = "puzzle_hunt_progress_v7";
+const STORAGE_KEY = "puzzle_hunt_progress_v8";
 
 // -------------------------
-// Background layers + transition overlay
+// Background layers + overlays
 // -------------------------
 function ensureLayers() {
   if (!document.querySelector(".bg-glitter")) {
@@ -15,10 +15,20 @@ function ensureLayers() {
     g.className = "bg-glitter";
     document.body.appendChild(g);
   }
+  if (!document.querySelector(".bg-glitter2")) {
+    const g2 = document.createElement("div");
+    g2.className = "bg-glitter2";
+    document.body.appendChild(g2);
+  }
   if (!document.querySelector(".bg-shimmer")) {
     const s = document.createElement("div");
     s.className = "bg-shimmer";
     document.body.appendChild(s);
+  }
+  if (!document.getElementById("confettiLayer")) {
+    const c = document.createElement("div");
+    c.id = "confettiLayer";
+    document.body.appendChild(c);
   }
   if (!document.getElementById("pageTransition")) {
     const t = document.createElement("div");
@@ -50,6 +60,61 @@ function enableLinkTransitions() {
     e.preventDefault();
     navigateWithTransition(url.href);
   });
+}
+
+// -------------------------
+// Wicked confetti burst
+// -------------------------
+function rand(min, max){ return Math.random() * (max - min) + min; }
+
+function spawnWickedConfetti({ x, y }) {
+  ensureLayers();
+  const layer = document.getElementById("confettiLayer");
+  if (!layer) return;
+
+  // emerald + pink + gold + white sparkle palette
+  const colors = [
+    "rgba(22,242,165,.95)",
+    "rgba(255,79,216,.85)",
+    "rgba(255,210,122,.85)",
+    "rgba(255,255,255,.90)"
+  ];
+
+  const pieces = 36;
+  for (let i = 0; i < pieces; i++) {
+    const el = document.createElement("div");
+    const isSpark = Math.random() < 0.35;
+
+    el.className = "confetti" + (isSpark ? " spark" : "");
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+    // random flight
+    const dx = rand(-220, 220);
+    const dy = rand(-260, -80);
+    const rot = rand(-420, 420);
+
+    el.style.setProperty("--dx", `${dx}px`);
+    el.style.setProperty("--dy", `${dy}px`);
+    el.style.setProperty("--rot", `${rot}deg`);
+
+    // size variation
+    if (!isSpark) {
+      const s = rand(6, 11);
+      el.style.width = `${s}px`;
+      el.style.height = `${s}px`;
+    } else {
+      el.style.width = `${rand(10, 18)}px`;
+      el.style.height = `${rand(2, 3.5)}px`;
+      el.style.transform = `rotate(${rand(0, 180)}deg)`;
+    }
+
+    layer.appendChild(el);
+
+    // cleanup
+    setTimeout(() => el.remove(), 1200);
+  }
 }
 
 // -------------------------
@@ -141,7 +206,6 @@ function renderIndex() {
   const { unlockedUpTo, solvedIds } = loadProgress();
   const solvedSet = new Set(solvedIds);
 
-  // Only show puzzles up to the next available one
   const visible = PUZZLES.filter(p => p.id <= unlockedUpTo);
 
   if (progressEl) progressEl.textContent = `Solved ${solvedSet.size} / ${PUZZLES.length}`;
@@ -206,4 +270,5 @@ window.PuzzleHunt = {
   submitAnswer,
   getPuzzleState,
   navigateWithTransition,
+  spawnWickedConfetti,
 };
