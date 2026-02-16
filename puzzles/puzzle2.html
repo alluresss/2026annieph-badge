@@ -51,24 +51,33 @@
       feedbackEl.classList.add(ok ? "ok" : "bad");
     }
 
-    function doSubmit() {
-      submitBtn.disabled = true;
+  function doSubmit() {
+  submitBtn.disabled = true;
 
-      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
-      setFeedback(res.ok, res.msg);
+  const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+  setFeedback(res.ok, res.msg);
 
-      if (!res.ok) {
-        answerEl.classList.remove("shake");
-        void answerEl.offsetWidth;
-        answerEl.classList.add("shake");
-        submitBtn.disabled = false;
-        return;
-      }
+  if (!res.ok) {
+    answerEl.classList.remove("shake");
+    void answerEl.offsetWidth;
+    answerEl.classList.add("shake");
+    submitBtn.disabled = false;
+    return;
+  }
 
-      setTimeout(() => {
-        window.PuzzleHunt.navigateWithTransition("../index.html");
-      }, 1100);
-    }
+  // Correct: Wicked confetti burst at the button
+  const rect = submitBtn.getBoundingClientRect();
+  window.PuzzleHunt.spawnWickedConfetti({
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  });
+
+  // Show "Correct!" for a moment, then transition home
+  setTimeout(() => {
+    window.PuzzleHunt.navigateWithTransition("../index.html");
+  }, 1200);
+}
+
 
     submitBtn.addEventListener("click", doSubmit);
     answerEl.addEventListener("keydown", (e) => {
