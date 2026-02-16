@@ -35,90 +35,6 @@ html, body{
   overflow-x:hidden;
 }
 
-/* =========================================================
-   GLITTER FIELD (very visible)
-   - two layers for parallax motion
-   - white, tiny, glowing
-   - always behind content
-========================================================= */
-
-.bg-glitter,
-.bg-glitter2{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  background-repeat: repeat;
-  /* strong glow; should be visible on all screens */
-  filter:
-    drop-shadow(0 0 6px rgba(255,255,255,.35))
-    drop-shadow(0 0 16px rgba(255,255,255,.20));
-  opacity: .95;
-}
-
-/* layer 1: dense tiny stars */
-.bg-glitter{
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.2px);
-  background-size: 120px 120px;
-  animation: glitterMove1 16s linear infinite, glitterTwinkle 3.2s ease-in-out infinite alternate;
-  mix-blend-mode: screen;
-}
-
-/* layer 2: sparser, smaller, different speed */
-.bg-glitter2{
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.85) 0 .8px, transparent 1px);
-  background-size: 180px 180px;
-  animation: glitterMove2 26s linear infinite, glitterTwinkle2 4.6s ease-in-out infinite alternate;
-  mix-blend-mode: screen;
-  opacity: .75;
-}
-
-@keyframes glitterMove1{
-  0% { background-position: 0px 0px; transform: translate3d(0,0,0); }
-  100% { background-position: 260px -200px; transform: translate3d(-0.8%, 0.4%, 0); }
-}
-
-@keyframes glitterMove2{
-  0% { background-position: 0px 0px; transform: translate3d(0,0,0); }
-  100% { background-position: -320px 240px; transform: translate3d(0.6%, -0.5%, 0); }
-}
-
-@keyframes glitterTwinkle{
-  0% { opacity: .65; }
-  100% { opacity: .98; }
-}
-@keyframes glitterTwinkle2{
-  0% { opacity: .45; }
-  100% { opacity: .85; }
-}
-
-/* very subtle shimmer ribbons (optional) */
-.bg-shimmer{
-  position:fixed;
-  inset:-30%;
-  pointer-events:none;
-  z-index:0;
-  opacity:.16;
-  background:
-    repeating-linear-gradient(
-      120deg,
-      rgba(255,255,255,.00) 0px,
-      rgba(255,255,255,.00) 26px,
-      rgba(255,255,255,.08) 52px,
-      rgba(255,255,255,.00) 80px
-    );
-  filter: blur(14px);
-  animation: shimmerMove 14s linear infinite;
-  mix-blend-mode: screen;
-}
-
-@keyframes shimmerMove{
-  0%   { transform: translate3d(-6%, 6%, 0); }
-  100% { transform: translate3d(6%, -6%, 0); }
-}
-
 /* Foreground above background */
 header, main, .container{ position:relative; z-index:2; }
 
@@ -307,7 +223,7 @@ button:disabled, a.button[aria-disabled="true"]{
 }
 
 /* =========================
-   PUZZLE PAGES (spacing)
+   PUZZLE PAGES
 ========================= */
 .page-title{
   font-family: Cinzel, Georgia, serif;
@@ -382,7 +298,6 @@ button:disabled, a.button[aria-disabled="true"]{
   text-shadow: 0 0 18px rgba(255,79,216,.25);
 }
 
-/* Wrong answer shake */
 @keyframes shake {
   0% { transform: translateX(0); }
   20% { transform: translateX(-6px); }
@@ -394,36 +309,39 @@ button:disabled, a.button[aria-disabled="true"]{
 .shake { animation: shake 360ms ease; }
 
 /* =========================
-   Wicked confetti (sparkles)
+   Wicked confetti (FIXED: always on top, always visible)
 ========================= */
 #confettiLayer{
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:9998;
+  z-index:2147483647; /* top of everything */
 }
 
 .confetti{
-  position:absolute;
-  width: 8px;
-  height: 8px;
+  position:fixed; /* IMPORTANT: fixed so it doesn't get clipped */
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
   opacity: 0;
-  filter: drop-shadow(0 0 10px rgba(255,255,255,.35));
-  animation: pop 1100ms ease-out forwards;
+  filter:
+    drop-shadow(0 0 10px rgba(255,255,255,.45))
+    drop-shadow(0 0 22px rgba(22,242,165,.18));
+  animation: confettiBurst 1100ms cubic-bezier(.1,.9,.2,1) forwards;
 }
 
 .confetti.spark{
-  width: 10px;
-  height: 2px;
+  width: 16px;
+  height: 3px;
   border-radius: 999px;
-  transform-origin: center;
 }
 
-@keyframes pop{
-  0%   { transform: translate3d(0,0,0) scale(.7); opacity:0; }
-  10%  { opacity:1; }
-  100% { transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(1); opacity:0; }
+@keyframes confettiBurst{
+  0%   { transform: translate3d(var(--x), var(--y), 0) scale(.7); opacity:0; }
+  12%  { opacity:1; }
+  100% { transform: translate3d(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy)), 0) rotate(var(--rot)) scale(1); opacity:0; }
 }
 
 /* =========================
