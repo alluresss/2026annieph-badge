@@ -4,27 +4,12 @@ const PUZZLES = [
   { id: 3, title: "Banana Business",   path: "puzzles/puzzle3.html", answer: "BANANA" },
 ];
 
-const STORAGE_KEY = "puzzle_hunt_progress_v8";
+const STORAGE_KEY = "puzzle_hunt_progress_v9";
 
 // -------------------------
-// Background layers + overlays
+// Overlays (confetti + transition only)
 // -------------------------
-function ensureLayers() {
-  if (!document.querySelector(".bg-glitter")) {
-    const g = document.createElement("div");
-    g.className = "bg-glitter";
-    document.body.appendChild(g);
-  }
-  if (!document.querySelector(".bg-glitter2")) {
-    const g2 = document.createElement("div");
-    g2.className = "bg-glitter2";
-    document.body.appendChild(g2);
-  }
-  if (!document.querySelector(".bg-shimmer")) {
-    const s = document.createElement("div");
-    s.className = "bg-shimmer";
-    document.body.appendChild(s);
-  }
+function ensureOverlays() {
   if (!document.getElementById("confettiLayer")) {
     const c = document.createElement("div");
     c.id = "confettiLayer";
@@ -38,14 +23,13 @@ function ensureLayers() {
 }
 
 function navigateWithTransition(href) {
-  ensureLayers();
+  ensureOverlays();
   document.body.classList.add("pt-out");
   setTimeout(() => {
     window.location.href = href;
   }, 520);
 }
 
-// Intercept same-site links for smooth transitions
 function enableLinkTransitions() {
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a");
@@ -63,57 +47,55 @@ function enableLinkTransitions() {
 }
 
 // -------------------------
-// Wicked confetti burst
+// Wicked confetti (fixed coords + topmost layer)
 // -------------------------
 function rand(min, max){ return Math.random() * (max - min) + min; }
 
 function spawnWickedConfetti({ x, y }) {
-  ensureLayers();
+  ensureOverlays();
   const layer = document.getElementById("confettiLayer");
   if (!layer) return;
 
-  // emerald + pink + gold + white sparkle palette
   const colors = [
-    "rgba(22,242,165,.95)",
-    "rgba(255,79,216,.85)",
-    "rgba(255,210,122,.85)",
-    "rgba(255,255,255,.90)"
+    "rgba(22,242,165,.95)", // emerald
+    "rgba(255,79,216,.85)", // pink
+    "rgba(255,210,122,.85)", // gold
+    "rgba(255,255,255,.95)" // white sparkle
   ];
 
-  const pieces = 36;
+  const pieces = 42;
+
   for (let i = 0; i < pieces; i++) {
     const el = document.createElement("div");
-    const isSpark = Math.random() < 0.35;
+    const isSpark = Math.random() < 0.4;
 
     el.className = "confetti" + (isSpark ? " spark" : "");
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
     el.style.background = colors[Math.floor(Math.random() * colors.length)];
 
-    // random flight
-    const dx = rand(-220, 220);
-    const dy = rand(-260, -80);
-    const rot = rand(-420, 420);
+    // CSS variables: absolute start position + motion
+    el.style.setProperty("--x", `${x}px`);
+    el.style.setProperty("--y", `${y}px`);
+
+    const dx = rand(-240, 240);
+    const dy = rand(-300, -90); // goes upward
+    const rot = rand(-520, 520);
 
     el.style.setProperty("--dx", `${dx}px`);
     el.style.setProperty("--dy", `${dy}px`);
     el.style.setProperty("--rot", `${rot}deg`);
 
-    // size variation
+    // random sizes
     if (!isSpark) {
-      const s = rand(6, 11);
+      const s = rand(6, 12);
       el.style.width = `${s}px`;
       el.style.height = `${s}px`;
     } else {
-      el.style.width = `${rand(10, 18)}px`;
-      el.style.height = `${rand(2, 3.5)}px`;
-      el.style.transform = `rotate(${rand(0, 180)}deg)`;
+      el.style.width = `${rand(12, 22)}px`;
+      el.style.height = `${rand(2, 4)}px`;
     }
 
     layer.appendChild(el);
-
-    // cleanup
-    setTimeout(() => el.remove(), 1200);
+    setTimeout(() => el.remove(), 1300);
   }
 }
 
@@ -260,7 +242,7 @@ function renderIndex() {
 // Init
 // -------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  ensureLayers();
+  ensureOverlays();
   enableLinkTransitions();
   renderIndex();
 });
