@@ -42,16 +42,35 @@
       answerEl.disabled = true;
       submitBtn.disabled = true;
       feedbackEl.textContent = "Solved ✅ You can revisit this puzzle, but resubmission is disabled.";
+      feedbackEl.classList.add("ok");
+    }
+
+    function setFeedback(ok, msg) {
+      feedbackEl.textContent = msg;
+      feedbackEl.classList.remove("ok", "bad");
+      feedbackEl.classList.add(ok ? "ok" : "bad");
     }
 
     function doSubmit() {
-      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
-      feedbackEl.textContent = res.msg;
-      feedbackEl.style.color = res.ok ? "green" : "#a00";
+      // prevent double clicks
+      submitBtn.disabled = true;
 
-      if (res.ok && res.redirectHome) {
-        window.PuzzleHunt.navigateWithTransition("../index.html", res.outType || "pt-out-solve");
+      const res = window.PuzzleHunt.submitAnswer(puzzleId, answerEl.value);
+      setFeedback(res.ok, res.msg);
+
+      if (!res.ok) {
+        // wrong: shake, re-enable
+        answerEl.classList.remove("shake");
+        void answerEl.offsetWidth; // restart animation
+        answerEl.classList.add("shake");
+        submitBtn.disabled = false;
+        return;
       }
+
+      // correct: show message first, then redirect
+      setTimeout(() => {
+        window.PuzzleHunt.navigateWithTransition("../index.html");
+      }, 1100);
     }
 
     submitBtn.addEventListener("click", doSubmit);
