@@ -35,70 +35,83 @@ html, body{
   overflow-x:hidden;
 }
 
-/* =========================
-   GLITTER (small, glowing, moving)
-========================= */
-.bg-glitter{
+/* =========================================================
+   GLITTER FIELD (very visible)
+   - two layers for parallax motion
+   - white, tiny, glowing
+   - always behind content
+========================================================= */
+
+.bg-glitter,
+.bg-glitter2{
   position:fixed;
   inset:0;
   pointer-events:none;
   z-index:0;
-  opacity:.9;
-  /* lots of tiny sparkles */
-  background:
-    radial-gradient(1px 1px at 12% 20%, rgba(255,255,255,.75) 50%, transparent 52%),
-    radial-gradient(1px 1px at 22% 38%, rgba(255,255,255,.35) 50%, transparent 52%),
-    radial-gradient(1px 1px at 32% 78%, rgba(255,255,255,.30) 50%, transparent 52%),
-    radial-gradient(1px 1px at 44% 22%, rgba(255,255,255,.45) 50%, transparent 52%),
-    radial-gradient(1px 1px at 58% 64%, rgba(255,255,255,.28) 50%, transparent 52%),
-    radial-gradient(1px 1px at 64% 16%, rgba(255,255,255,.38) 50%, transparent 52%),
-    radial-gradient(1px 1px at 72% 44%, rgba(255,255,255,.28) 50%, transparent 52%),
-    radial-gradient(1px 1px at 86% 30%, rgba(255,255,255,.35) 50%, transparent 52%),
-    radial-gradient(1px 1px at 92% 74%, rgba(255,255,255,.25) 50%, transparent 52%),
-    radial-gradient(1px 1px at 18% 88%, rgba(255,255,255,.30) 50%, transparent 52%),
-
-    radial-gradient(1px 1px at 8% 70%, rgba(22,242,165,.35) 50%, transparent 52%),
-    radial-gradient(1px 1px at 78% 10%, rgba(255,79,216,.30) 50%, transparent 52%),
-    radial-gradient(1px 1px at 55% 35%, rgba(255,210,122,.25) 50%, transparent 52%);
+  background-repeat: repeat;
+  /* strong glow; should be visible on all screens */
   filter:
-    drop-shadow(0 0 6px rgba(255,255,255,.25))
-    drop-shadow(0 0 16px rgba(22,242,165,.10));
-  animation: glitterFloat 16s ease-in-out infinite alternate,
-             glitterTwinkle 3.6s ease-in-out infinite alternate;
+    drop-shadow(0 0 6px rgba(255,255,255,.35))
+    drop-shadow(0 0 16px rgba(255,255,255,.20));
+  opacity: .95;
 }
 
-/* drift around */
-@keyframes glitterFloat{
-  0%   { transform: translate3d(0,0,0); }
-  35%  { transform: translate3d(-1.2%, 0.8%, 0); }
-  70%  { transform: translate3d(1.0%, -1.0%, 0); }
-  100% { transform: translate3d(-0.6%, -0.2%, 0); }
+/* layer 1: dense tiny stars */
+.bg-glitter{
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.2px);
+  background-size: 120px 120px;
+  animation: glitterMove1 16s linear infinite, glitterTwinkle 3.2s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
 }
 
-/* breathe glow */
+/* layer 2: sparser, smaller, different speed */
+.bg-glitter2{
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.85) 0 .8px, transparent 1px);
+  background-size: 180px 180px;
+  animation: glitterMove2 26s linear infinite, glitterTwinkle2 4.6s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+  opacity: .75;
+}
+
+@keyframes glitterMove1{
+  0% { background-position: 0px 0px; transform: translate3d(0,0,0); }
+  100% { background-position: 260px -200px; transform: translate3d(-0.8%, 0.4%, 0); }
+}
+
+@keyframes glitterMove2{
+  0% { background-position: 0px 0px; transform: translate3d(0,0,0); }
+  100% { background-position: -320px 240px; transform: translate3d(0.6%, -0.5%, 0); }
+}
+
 @keyframes glitterTwinkle{
-  0%   { opacity:.55; }
-  100% { opacity:.95; }
+  0% { opacity: .65; }
+  100% { opacity: .98; }
+}
+@keyframes glitterTwinkle2{
+  0% { opacity: .45; }
+  100% { opacity: .85; }
 }
 
-/* subtle shimmer ribbons (very light) */
+/* very subtle shimmer ribbons (optional) */
 .bg-shimmer{
   position:fixed;
   inset:-30%;
   pointer-events:none;
   z-index:0;
-  opacity:.20;
+  opacity:.16;
   background:
     repeating-linear-gradient(
       120deg,
-      rgba(22,242,165,.00) 0px,
-      rgba(22,242,165,.00) 20px,
-      rgba(22,242,165,.10) 44px,
-      rgba(255,79,216,.08) 62px,
-      rgba(255,79,216,.00) 88px
+      rgba(255,255,255,.00) 0px,
+      rgba(255,255,255,.00) 26px,
+      rgba(255,255,255,.08) 52px,
+      rgba(255,255,255,.00) 80px
     );
-  filter: blur(12px);
-  animation: shimmerMove 12s linear infinite;
+  filter: blur(14px);
+  animation: shimmerMove 14s linear infinite;
+  mix-blend-mode: screen;
 }
 
 @keyframes shimmerMove{
@@ -294,7 +307,7 @@ button:disabled, a.button[aria-disabled="true"]{
 }
 
 /* =========================
-   PUZZLE PAGES (less cramped)
+   PUZZLE PAGES (spacing)
 ========================= */
 .page-title{
   font-family: Cinzel, Georgia, serif;
@@ -355,24 +368,18 @@ button:disabled, a.button[aria-disabled="true"]{
 .feedback{
   margin-top: 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--muted);
 }
 
 .feedback.ok{
   color: rgba(22,242,165,.95);
-  text-shadow: 0 0 18px rgba(22,242,165,.22);
+  text-shadow: 0 0 18px rgba(22,242,165,.28);
 }
 
 .feedback.bad{
   color: rgba(255,79,216,.92);
-  text-shadow: 0 0 18px rgba(255,79,216,.18);
-}
-
-.note{
-  margin-top:8px;
-  font-size:12px;
-  color: rgba(245,243,255,.60);
+  text-shadow: 0 0 18px rgba(255,79,216,.25);
 }
 
 /* Wrong answer shake */
@@ -384,13 +391,43 @@ button:disabled, a.button[aria-disabled="true"]{
   80% { transform: translateX(4px); }
   100% { transform: translateX(0); }
 }
-.shake {
-  animation: shake 360ms ease;
+.shake { animation: shake 360ms ease; }
+
+/* =========================
+   Wicked confetti (sparkles)
+========================= */
+#confettiLayer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9998;
+}
+
+.confetti{
+  position:absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  opacity: 0;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,.35));
+  animation: pop 1100ms ease-out forwards;
+}
+
+.confetti.spark{
+  width: 10px;
+  height: 2px;
+  border-radius: 999px;
+  transform-origin: center;
+}
+
+@keyframes pop{
+  0%   { transform: translate3d(0,0,0) scale(.7); opacity:0; }
+  10%  { opacity:1; }
+  100% { transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(1); opacity:0; }
 }
 
 /* =========================
-   Transition overlay (simple + smooth)
-   OUT only (we're not doing the "ppt slide" look anymore)
+   Transition overlay
 ========================= */
 #pageTransition{
   position:fixed;
