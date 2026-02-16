@@ -1,28 +1,30 @@
 /* =========================
-   WICKED THEME (Emerald + Onyx)
-   Drop-in stylesheet for your puzzle hunt
+   WICKED THEME v2
+   - Emerald City silhouette background
+   - Animated glitter
+   - Page transitions (varies by occasion)
 ========================= */
 
-/* Optional fonts (Google Fonts) */
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;600;700;800&display=swap");
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;600;700;800&display=swap");
 
 :root{
-  --bg0:#07060a;         /* near-black */
-  --bg1:#0c0a12;         /* deep violet-black */
-  --panel:#0f0d18cc;     /* translucent panel */
-  --border:rgba(255,255,255,.10);
-  --border2:rgba(255,255,255,.16);
+  --bg0:#07060a;
+  --bg1:#0c0a12;
 
   --text:#f5f3ff;
   --muted:rgba(245,243,255,.72);
 
   --emerald:#16f2a5;
   --emerald2:#0bbf7f;
-  --pink:#ff4fd8;        /* Glinda accent */
+  --pink:#ff4fd8;
   --gold:#ffd27a;
 
-  --shadow: 0 20px 60px rgba(0,0,0,.55);
-  --shadow2: 0 10px 30px rgba(0,0,0,.45);
+  --border:rgba(255,255,255,.10);
+  --border2:rgba(255,255,255,.16);
+
+  --shadow: 0 22px 70px rgba(0,0,0,.55);
+  --shadow2: 0 12px 34px rgba(0,0,0,.45);
 
   --radius: 18px;
 }
@@ -33,30 +35,106 @@ html,body{
   margin:0;
   padding:0;
   color:var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.55;
   background:
     radial-gradient(1200px 600px at 20% 10%, rgba(22,242,165,.18), transparent 60%),
     radial-gradient(900px 500px at 80% 20%, rgba(255,79,216,.12), transparent 55%),
     radial-gradient(800px 600px at 50% 80%, rgba(255,210,122,.10), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height:1.55;
 }
 
-/* subtle star/dust overlay */
+/* -------------------------
+   GLITTER BACKGROUND
+   (animated sparkles like Wicked cover shimmer)
+-------------------------- */
 body::before{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  background-image:
-    radial-gradient(2px 2px at 12% 22%, rgba(255,255,255,.35) 40%, transparent 41%),
-    radial-gradient(1px 1px at 78% 18%, rgba(255,255,255,.28) 40%, transparent 41%),
-    radial-gradient(1px 1px at 34% 66%, rgba(255,255,255,.22) 40%, transparent 41%),
-    radial-gradient(2px 2px at 62% 74%, rgba(255,255,255,.18) 40%, transparent 41%),
-    radial-gradient(1px 1px at 90% 52%, rgba(255,255,255,.20) 40%, transparent 41%);
-  opacity:.55;
-  filter: blur(.15px);
+  opacity:.85;
+  background:
+    radial-gradient(2px 2px at 12% 22%, rgba(255,255,255,.50) 45%, transparent 46%),
+    radial-gradient(1px 1px at 78% 18%, rgba(255,255,255,.34) 45%, transparent 46%),
+    radial-gradient(1px 1px at 34% 66%, rgba(255,255,255,.28) 45%, transparent 46%),
+    radial-gradient(2px 2px at 62% 74%, rgba(255,255,255,.22) 45%, transparent 46%),
+    radial-gradient(1px 1px at 90% 52%, rgba(255,255,255,.24) 45%, transparent 46%),
+    radial-gradient(1px 1px at 24% 88%, rgba(255,255,255,.18) 45%, transparent 46%),
+    radial-gradient(2px 2px at 46% 30%, rgba(255,255,255,.20) 45%, transparent 46%),
+    radial-gradient(1px 1px at 55% 12%, rgba(255,255,255,.16) 45%, transparent 46%);
+  filter: blur(.2px);
+  animation: glitterTwinkle 4.2s ease-in-out infinite alternate;
 }
+
+@keyframes glitterTwinkle{
+  0%   { opacity:.55; transform: translateY(0px); }
+  100% { opacity:.95; transform: translateY(-6px); }
+}
+
+/* A second shimmer layer that drifts diagonally */
+body::after{
+  content:"";
+  position:fixed;
+  inset:-20%;
+  pointer-events:none;
+  opacity:.35;
+  background:
+    repeating-linear-gradient(
+      120deg,
+      rgba(22,242,165,.10) 0px,
+      rgba(22,242,165,0) 14px,
+      rgba(255,79,216,.08) 28px,
+      rgba(255,79,216,0) 44px
+    );
+  filter: blur(10px);
+  animation: shimmerDrift 14s linear infinite;
+}
+
+@keyframes shimmerDrift{
+  0%   { transform: translate(-6%, 6%) rotate(0.01deg); }
+  100% { transform: translate(6%, -6%) rotate(0.01deg); }
+}
+
+/* -------------------------
+   EMERALD CITY SILHOUETTE
+   (CSS-drawn skyline via gradients)
+-------------------------- */
+.bg-emerald-city{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  height: 38vh;
+  pointer-events:none;
+  opacity:.45;
+  z-index:0;
+  background:
+    /* glow haze behind city */
+    radial-gradient(900px 240px at 50% 100%, rgba(22,242,165,.30), transparent 65%),
+    radial-gradient(700px 200px at 20% 100%, rgba(255,79,216,.10), transparent 60%),
+    radial-gradient(700px 200px at 80% 100%, rgba(255,210,122,.08), transparent 60%),
+
+    /* skyline blocks */
+    linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0)) 0 0/100% 100%,
+    linear-gradient(to top, rgba(0,0,0,.72) 0 0) 0 100%/100% 20%,
+
+    /* buildings (a bunch of rectangles with different heights) */
+    linear-gradient(to top, rgba(0,0,0,.82) 0 0) 6% 100%/4% 38%,
+    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 12% 100%/6% 52%,
+    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 20% 100%/5% 44%,
+    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 28% 100%/7% 62%,
+    linear-gradient(to top, rgba(0,0,0,.80) 0 0) 38% 100%/4% 36%,
+    linear-gradient(to top, rgba(0,0,0,.88) 0 0) 44% 100%/8% 70%,
+    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 56% 100%/6% 56%,
+    linear-gradient(to top, rgba(0,0,0,.86) 0 0) 66% 100%/7% 64%,
+    linear-gradient(to top, rgba(0,0,0,.82) 0 0) 76% 100%/5% 46%,
+    linear-gradient(to top, rgba(0,0,0,.88) 0 0) 84% 100%/8% 72%,
+    linear-gradient(to top, rgba(0,0,0,.84) 0 0) 93% 100%/4% 40%;
+  background-repeat:no-repeat;
+  filter: drop-shadow(0 -10px 40px rgba(22,242,165,.18));
+}
+
+/* ensure content sits above background layers */
+header, main, .container { position:relative; z-index:1; }
 
 .container{
   max-width: 1120px;
@@ -64,15 +142,15 @@ body::before{
   padding: 28px 20px;
 }
 
-/* =========================
+/* -------------------------
    HEADER
-========================= */
+-------------------------- */
 header{
   position:sticky;
   top:0;
   z-index:10;
   backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(10,8,14,.82), rgba(10,8,14,.55));
+  background: linear-gradient(180deg, rgba(10,8,14,.86), rgba(10,8,14,.58));
   border-bottom: 1px solid var(--border);
 }
 
@@ -85,20 +163,6 @@ h1{
   text-shadow: 0 10px 30px rgba(0,0,0,.6);
 }
 
-h2{
-  font-family: Cinzel, Georgia, serif;
-  letter-spacing:.5px;
-  font-size: 30px;
-  margin: 18px 0 12px;
-}
-
-.muted{
-  color: var(--muted);
-  margin: 0 0 8px;
-  font-size: 16px;
-}
-
-/* Wicked-ish highlight under title */
 header h1{
   display:inline-block;
   position:relative;
@@ -111,20 +175,30 @@ header h1::after{
   bottom:-10px;
   height:3px;
   border-radius:999px;
-  background: linear-gradient(90deg, var(--emerald), rgba(22,242,165,.15), var(--pink));
+  background: linear-gradient(90deg, var(--emerald), rgba(22,242,165,.12), var(--pink));
   box-shadow: 0 0 18px rgba(22,242,165,.35);
+}
+
+h2{
+  font-family: Cinzel, Georgia, serif;
+  letter-spacing:.5px;
+  font-size: 30px;
+  margin: 18px 0 12px;
+}
+
+.muted{
+  color: var(--muted);
+  margin: 0 0 10px;
+  font-size: 16px;
 }
 
 .progress{
   margin-top: 10px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing:.3px;
-  color: rgba(245,243,255,.9);
+  color: rgba(245,243,255,.92);
 }
 
-/* =========================
-   BUTTONS
-========================= */
 .row{
   display:flex;
   gap: 10px;
@@ -132,15 +206,17 @@ header h1::after{
   margin-top: 14px;
 }
 
+/* -------------------------
+   BUTTONS
+-------------------------- */
 button, a.button{
   appearance:none;
   border: 1px solid var(--border2);
   color: var(--text);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
   border-radius: 999px;
   padding: 10px 16px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing:.2px;
   cursor:pointer;
   text-decoration:none;
@@ -153,13 +229,12 @@ button, a.button{
 
 button:hover, a.button:hover{
   transform: translateY(-1px);
-  border-color: rgba(22,242,165,.35);
+  border-color: rgba(22,242,165,.45);
   filter: brightness(1.05);
 }
 
 button.secondary, a.button.secondary{
-  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
-  border-color: rgba(255,79,216,.22);
+  border-color: rgba(255,79,216,.26);
 }
 
 button:disabled, a.button[aria-disabled="true"]{
@@ -167,9 +242,9 @@ button:disabled, a.button[aria-disabled="true"]{
   pointer-events:none;
 }
 
-/* =========================
+/* -------------------------
    GALLERY GRID
-========================= */
+-------------------------- */
 .gallery{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -194,7 +269,6 @@ button:disabled, a.button[aria-disabled="true"]{
   flex-direction:column;
   gap: 12px;
   min-height: 165px;
-  transform: translateZ(0);
 }
 
 .card::before{
@@ -259,23 +333,19 @@ button:disabled, a.button[aria-disabled="true"]{
   color: #ffd0f3;
 }
 
-/* Make the "Open" button look magical */
+/* Magical open button */
 .card a.button{
   align-self:flex-start;
-  background:
-    linear-gradient(180deg, rgba(22,242,165,.22), rgba(22,242,165,.08));
+  background: linear-gradient(180deg, rgba(22,242,165,.22), rgba(22,242,165,.08));
   border-color: rgba(22,242,165,.40);
   box-shadow:
     0 18px 40px rgba(0,0,0,.45),
     0 0 22px rgba(22,242,165,.18);
 }
-.card a.button:hover{
-  border-color: rgba(22,242,165,.65);
-}
 
-/* =========================
+/* -------------------------
    PUZZLE PAGES
-========================= */
+-------------------------- */
 .page-title{
   font-family: Cinzel, Georgia, serif;
   font-size: 42px;
@@ -303,7 +373,6 @@ button:disabled, a.button[aria-disabled="true"]{
   display:block;
 }
 
-/* Answer section */
 .answer-section{
   margin-top: 16px;
   border-radius: var(--radius);
@@ -343,10 +412,77 @@ button:disabled, a.button[aria-disabled="true"]{
   color: rgba(245,243,255,.60);
 }
 
-/* Links */
-a{
-  color: #c9b6ff;
+/* =========================
+   PAGE TRANSITIONS (OVERLAY)
+   JS toggles these classes on <body>
+========================= */
+#pageTransition{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
+  opacity:0;
+  transform: translateY(10px) scale(1.02);
+  transition: opacity .35s ease, transform .35s ease;
 }
-a:hover{
-  color: #fff;
+
+/* default fade */
+body.t-fade #pageTransition{
+  opacity:1;
+  transform:none;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+}
+
+/* emerald sweep (home -> puzzle) */
+body.t-emerald-sweep #pageTransition{
+  opacity:1;
+  transform:none;
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(22,242,165,.35), transparent 60%),
+    linear-gradient(90deg, rgba(22,242,165,.0), rgba(22,242,165,.18), rgba(0,0,0,.65));
+  backdrop-filter: blur(10px);
+  animation: sweep 520ms ease forwards;
+}
+
+@keyframes sweep{
+  0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+/* pink sparkle (puzzle -> home) */
+body.t-pink-sparkle #pageTransition{
+  opacity:1;
+  transform:none;
+  background:
+    radial-gradient(2px 2px at 18% 32%, rgba(255,255,255,.55) 45%, transparent 46%),
+    radial-gradient(2px 2px at 62% 18%, rgba(255,255,255,.45) 45%, transparent 46%),
+    radial-gradient(2px 2px at 78% 66%, rgba(255,255,255,.35) 45%, transparent 46%),
+    radial-gradient(1000px 500px at 70% 30%, rgba(255,79,216,.25), transparent 60%),
+    rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  animation: sparklePop 520ms ease forwards;
+}
+
+@keyframes sparklePop{
+  0% { transform: scale(1.02); filter: brightness(1); }
+  60% { transform: scale(1.00); filter: brightness(1.12); }
+  100% { transform: scale(1.00); filter: brightness(1.0); }
+}
+
+/* emerald burst (solve -> home) */
+body.t-emerald-burst #pageTransition{
+  opacity:1;
+  transform:none;
+  background:
+    radial-gradient(600px 600px at 50% 55%, rgba(22,242,165,.45), transparent 62%),
+    radial-gradient(900px 500px at 45% 50%, rgba(255,210,122,.14), transparent 65%),
+    rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  animation: burst 520ms ease forwards;
+}
+
+@keyframes burst{
+  0% { clip-path: circle(0% at 50% 55%); }
+  100% { clip-path: circle(140% at 50% 55%); }
 }
